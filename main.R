@@ -5,8 +5,8 @@ options(scipen = 200)
 #--------------STEP1----------------
 #----preparing Peron's dataset------
 #-----------------------------------
-#pdata<-PrepareData()
-#save.image("pdata.RData")
+pdata<-PrepareData()
+save.image("pdata.RData")
 #can be saved if pdata.Rdata already exist
 
 
@@ -14,7 +14,7 @@ options(scipen = 200)
 #-------------Step2--------------------
 #conduct regression for damage function
 #--------------------------------------
-load("pdata.RData")
+#load("pdata.RData")
 
 RegResults=RegDamageGrowth(pdata,"AdaptationPeron")
 
@@ -63,7 +63,7 @@ save.image("pdata_dmg.RData")
 #Estimate income elasticity of climate impacts
 #-----------------------------------------------------------
 
-load("pdata_dmg.RData")
+#load("pdata_dmg.RData")
 
 
 #----5.1 Estimating elasticity according to Bjoern's approach-----

@@ -1,6 +1,6 @@
 *.RData
 *.Rhistory
-*.Rprofile
 *.dta
 *.html
 *.xlsx
+.Rproj.user
