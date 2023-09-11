@@ -22,6 +22,7 @@ OutElasticity.G <- function(){
   elasticityG[5,'persistence']="P5"
   elasticityG[5,2:5]=sapply(ModellistG.P5,function(model) coef(model)['log(cov)'])
   
-  return(elasticityG)
+  
   openxlsx::write.xlsx(elasticityG,file=paste("result/elasticityG",'.xlsx',sep=''))
+  return(elasticityG)
 }

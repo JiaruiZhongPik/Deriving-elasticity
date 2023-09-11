@@ -68,6 +68,7 @@ save.image("pdata_dmg.RData")
 
 #----5.1 Estimating elasticity according to Bjoern's approach-----
 
+
 #linear model model with different persistence
 modellist1.IP<-RegElasticity.B(1,pdata,"IP")
 modellist1.P30<-RegElasticity.B(1,pdata,"P30")
