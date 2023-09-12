@@ -40,9 +40,9 @@ EstimateDamage <- function(data, Startyear,HL){
     
     subset_data$t = subset_data$Year - Startyear + 1
     
-    for (n in unique(subset_data$t)){
+    for (n in unique(subset_data$t)[-1]){
       subset_data[subset_data$t == n,]$growth_cf_cum=
-        prod(1 + subset_data$growth_income_a[1:n] + subset_data$delta_growth_a[1:n] * rev(Persistence[1:n]))
+        prod(1 + subset_data$growth_income_a[2:n] + subset_data$delta_growth_a[2:n] * rev(Persistence[1:(n-1)]))
     }
     
     #compute counterfactual GDP

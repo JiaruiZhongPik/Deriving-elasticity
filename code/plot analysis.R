@@ -4,12 +4,33 @@ Polypara=1
 persistence="IP"
 
 data <- pdata %>%
-  select(ends_with(persistence),all_of(c("Year", "state","panelid", "temp","cpercentile","PTNI05"))) %>%
-  dplyr::filter(Year >  1987) %>%
+select(ends_with(persistence),all_of(c("Year", "state","CountryCode","panelid", "temp","ctemp_gswp3","cpercentile","PTNI05",'yhat1','yhat2',"Growth_income"))) %>%
+  dplyr::filter(Year >= 1987) %>%
   rename_with(~ gsub(paste("_",persistence,"$",sep=''), "", .), ends_with(persistence)) %>%
   group_by(state, Year) %>%
   mutate(State_Damage = sum(Damage, na.rm=F),
          State_preDMG_Income = sum(Counterfactual_income,na.rm=F)) 
+
+
+data <- data %>%
+  mutate(
+    # STEP1 Calculating the difference in growth rate between the observed temperature and the counterfactual temperature
+    delta_growth = yhat2 - yhat1,
+    
+    # STEP2 Calculating the counterfactual growth rate
+    growth_counterfactual = Growth_income + delta_growth,
+    
+    # STEP3 Translate continuous growth rate to annual growth rate
+    growth_income_a = exp(Growth_income) - 1,
+    growth_counterfactual_a = exp(growth_counterfactual)-1,
+    delta_growth_a = growth_counterfactual_a - growth_income_a,
+    
+    dmgS = Damage / Counterfactual_income,
+    
+    dmgSdelta=delta_growth_a/(1+delta_growth_a)
+  )
+
+df=data[which(data$panelid==1),]
 
 plot1=ggplot(data, aes(x = factor(cpercentile), y = Damage)) +
   geom_boxplot(fill = "lightblue", color = "black") +
@@ -91,4 +112,108 @@ plot4 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income/Sta
 
 ggsave(paste("figure/4.dmgS over IncomeS.png",sep=''), 
        plot = plot4, width = 6, height = 4, dpi = 300)
+
+
+data %>%
+  dplyr::filter(CountryCode == "USA" & cpercentile == 1) %>%
+  ggplot(aes(x = as.numeric(Year))) +
+  geom_line(aes(y = Counterfactual_income), linetype = "solid", size = 1) +
+  scale_y_log10() +
+  scale_y_log10()+
+  labs(x = "Year", y = "Income", title = "Income Over Time for USA (cpercentile = 1)") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5"))
+
+
+for(i in c('USA',"IND",'NOR','NGA')){
+  plot5 <- data %>%
+    dplyr::filter(CountryCode == i) %>%
+    ggplot(aes(x = as.numeric(Year))) +
+    geom_line(aes(y = Counterfactual_income,color="Counterfactual_income"), size = 0.8) +
+    geom_line(aes(y = PTNI05,color = "PTNI05"), size = 0.8) +
+    labs(x = "Year", y = "Income", title = paste("Income Over Time for ",i," by Income Group",sep='')) +
+    scale_y_log10()+
+    scale_color_discrete(name = "Income Group") +
+    facet_wrap(~ cpercentile, ncol = 5, scales = 'free_y') +  # Create separate plots for each cpercentile
+    theme_bw() +
+    theme(axis.text.y = element_text(size = 10),
+          axis.text.x = element_text(size = 10),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 12),
+          axis.title = element_text(size = 12),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_rect(fill = "#f5f5f5"),
+          legend.position = "bottom" )
+  ggsave(paste("figure/plot5_compare income_",i,".png",sep=''), 
+         plot = plot5, width = 12, height = 6, dpi = 300)
+}
+
+
+plot6 <- ggplot(data, aes(x =temp, y = yhat2 - yhat1, color = factor(cpercentile))) +
+  geom_point(size=0.5) +
+  scale_color_viridis(discrete = T) +  #Use the viridis color palette
+  labs(x = "Temperature", y = "Difference in growth rate") +
+  ggtitle("What is the projected difference between growth rate?") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5"))
+ggsave(paste("figure/plot6_deltaY.png",sep=''), 
+       plot = plot6, width = 6, height = 6, dpi = 300)
+
+
+
+ggplot(data[which(data$Year==2019),], aes(x =factor(cpercentile), y = Growth_income, color = factor(cpercentile))) +
+  geom_boxplot() +
+  scale_color_viridis(discrete = T) +  #Use the viridis color palette
+  labs(x = "Growth_income", y = " yhat2 - yhat1") +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "text", aes(label = sprintf("%.5f", ..y..)),
+               vjust = -0.5, size = 3, color = "red") + # Add mean text labels
+  ggtitle("What is the projected difference between growth rate?") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5"))
+
+ggplot(data[which(data$Year==1988),], aes(x =factor(cpercentile), y = (yhat2-yhat1)/(1+yhat2-yhat1), color = factor(cpercentile))) +
+  geom_boxplot() +
+  scale_color_viridis(discrete = T) +  #Use the viridis color palette
+  labs(x = "Growth_income", y = " yhat2 - yhat1") +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "text", aes(label = sprintf("%.5f", ..y..)),
+               vjust = -0.5, size = 3, color = "red") + # Add mean text labels
+  ggtitle("What is the projected difference between growth rate?") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5"))
+
+
 
