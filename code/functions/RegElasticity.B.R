@@ -51,7 +51,7 @@ RegElasticity.B <- function(Polypara,data,persistence){
             type= "text",
             title = "Estimating income elasticity",align=TRUE,
             add.lines=list(c('Year FE', 'No','Yes','Yes',"Yes"),
-                           c('Income group FE', 'No','No','Yes',"Yes"),
+                           c('State FE', 'No','No','Yes',"Yes"),
                            c('BIC',round(bic_values,2))
             ),
             dep.var.labels=c("log(damage/IncomePreDMG)"),
