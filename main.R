@@ -14,7 +14,7 @@ save.image("pdata.RData")
 #-------------Step2--------------------
 #conduct regression for damage function
 #--------------------------------------
-#load("pdata.RData")
+load("pdata.RData")
 
 RegResults=RegDamageGrowth(pdata,"AdaptationPeron")
 

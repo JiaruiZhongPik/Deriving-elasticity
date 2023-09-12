@@ -12,26 +12,6 @@ select(ends_with(persistence),all_of(c("Year", "state","CountryCode","panelid", 
          State_preDMG_Income = sum(Counterfactual_income,na.rm=F)) 
 
 
-data <- data %>%
-  mutate(
-    # STEP1 Calculating the difference in growth rate between the observed temperature and the counterfactual temperature
-    delta_growth = yhat2 - yhat1,
-    
-    # STEP2 Calculating the counterfactual growth rate
-    growth_counterfactual = Growth_income + delta_growth,
-    
-    # STEP3 Translate continuous growth rate to annual growth rate
-    growth_income_a = exp(Growth_income) - 1,
-    growth_counterfactual_a = exp(growth_counterfactual)-1,
-    delta_growth_a = growth_counterfactual_a - growth_income_a,
-    
-    dmgS = Damage / Counterfactual_income,
-    
-    dmgSdelta=delta_growth_a/(1+delta_growth_a)
-  )
-
-df=data[which(data$panelid==1),]
-
 plot1=ggplot(data, aes(x = factor(cpercentile), y = Damage)) +
   geom_boxplot(fill = "lightblue", color = "black") +
   stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "text", aes(label = sprintf("%.0f", ..y..)),
@@ -49,7 +29,7 @@ plot1=ggplot(data, aes(x = factor(cpercentile), y = Damage)) +
         panel.border = element_blank(),
         panel.background = element_rect(fill = "#f5f5f5"))+
   scale_y_log10() 
-ggsave(paste("figure/1.absolute dmg over income groups.png",sep=''), 
+ggsave(paste("figure/1.absolute dmg over income groups1_",persistence,".png",sep=''), 
        plot = plot1, width = 5, height = 4, dpi = 300)
 
 
@@ -69,7 +49,7 @@ plot2=ggplot(data, aes(x = factor(cpercentile), y = Damage/Counterfactual_income
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         panel.background = element_rect(fill = "#f5f5f5"))
-ggsave(paste("figure/2.box plot over dmgS income groups.png",sep=''), 
+ggsave(paste("figure/2.box plot over dmgS income groups_",persistence,".png",sep=''), 
        plot = plot2, width = 5, height = 4, dpi = 300)
 
 
@@ -89,7 +69,7 @@ plot3 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income, y 
         panel.border = element_blank(),
         panel.background = element_rect(fill = "#f5f5f5")) +
   scale_x_log10()  # Apply log10 transformation to x-axis
-ggsave(paste("figure/3.dmgS over Income_B.png",sep=''), 
+ggsave(paste("figure/3.dmgS over Income_B_",persistence,".png",sep=''), 
        plot = plot3, width = 6, height = 4, dpi = 300)
 
 
@@ -110,27 +90,8 @@ plot4 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income/Sta
         panel.background = element_rect(fill = "#f5f5f5"))+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray")  # Add y=x reference line
 
-ggsave(paste("figure/4.dmgS over IncomeS.png",sep=''), 
+ggsave(paste("figure/4.dmgS over IncomeS_",persistence,".png",sep=''), 
        plot = plot4, width = 6, height = 4, dpi = 300)
-
-
-data %>%
-  dplyr::filter(CountryCode == "USA" & cpercentile == 1) %>%
-  ggplot(aes(x = as.numeric(Year))) +
-  geom_line(aes(y = Counterfactual_income), linetype = "solid", size = 1) +
-  scale_y_log10() +
-  scale_y_log10()+
-  labs(x = "Year", y = "Income", title = "Income Over Time for USA (cpercentile = 1)") +
-  theme_bw() +
-  theme(axis.text.y = element_text(size = 10),
-        axis.text.x = element_text(size = 10),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 12),
-        axis.title = element_text(size = 12),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_rect(fill = "#f5f5f5"))
 
 
 for(i in c('USA',"IND",'NOR','NGA')){
@@ -154,7 +115,7 @@ for(i in c('USA',"IND",'NOR','NGA')){
           panel.border = element_blank(),
           panel.background = element_rect(fill = "#f5f5f5"),
           legend.position = "bottom" )
-  ggsave(paste("figure/plot5_compare income_",i,".png",sep=''), 
+  ggsave(paste("figure/plot5_compare income_",i,"_",persistence,".png",sep=''), 
          plot = plot5, width = 12, height = 6, dpi = 300)
 }
 
@@ -180,24 +141,6 @@ ggsave(paste("figure/plot6_deltaY.png",sep=''),
 
 
 ggplot(data[which(data$Year==2019),], aes(x =factor(cpercentile), y = Growth_income, color = factor(cpercentile))) +
-  geom_boxplot() +
-  scale_color_viridis(discrete = T) +  #Use the viridis color palette
-  labs(x = "Growth_income", y = " yhat2 - yhat1") +
-  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "text", aes(label = sprintf("%.5f", ..y..)),
-               vjust = -0.5, size = 3, color = "red") + # Add mean text labels
-  ggtitle("What is the projected difference between growth rate?") +
-  theme_bw() +
-  theme(axis.text.y = element_text(size = 10),
-        axis.text.x = element_text(size = 10),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 12),
-        axis.title = element_text(size = 12),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_rect(fill = "#f5f5f5"))
-
-ggplot(data[which(data$Year==1988),], aes(x =factor(cpercentile), y = (yhat2-yhat1)/(1+yhat2-yhat1), color = factor(cpercentile))) +
   geom_boxplot() +
   scale_color_viridis(discrete = T) +  #Use the viridis color palette
   labs(x = "Growth_income", y = " yhat2 - yhat1") +
