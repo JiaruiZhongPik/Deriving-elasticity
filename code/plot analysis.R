@@ -4,7 +4,7 @@ Polypara=1
 persistence="IP"
 
 data <- pdata %>%
-select(ends_with(persistence),all_of(c("Year", "state","CountryCode","panelid", "temp","ctemp_gswp3","cpercentile","PTNI05",'yhat1','yhat2',"Growth_income"))) %>%
+select(ends_with(persistence),all_of(c("Year", "state","CountryCode","panelid", "temp","ctemp_gswp3","cpercentile","PTNI05",'yhat1','yhat2',"Growth_income",'IG_hetero'))) %>%
   dplyr::filter(Year >= 1987) %>%
   rename_with(~ gsub(paste("_",persistence,"$",sep=''), "", .), ends_with(persistence)) %>%
   group_by(state, Year) %>%
@@ -35,7 +35,7 @@ ggsave(paste("figure/1.absolute dmg over income groups1_",persistence,".png",sep
 
 plot2=ggplot(data, aes(x = factor(cpercentile), y = Damage/Counterfactual_income)) +
   geom_boxplot(fill = "lightblue", color = "black") +
-  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "text", aes(label = sprintf("%.2f", ..y..)),
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "text", aes(label = sprintf("%.3f", ..y..)),
                vjust = -0.5, size = 3, color = "red") + # Add mean text labels
   labs(x = "Income groups", y = "Damage/Income") +
   ggtitle("Box Plot of Damage Share")+
@@ -70,14 +70,14 @@ plot3 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income, y 
         panel.background = element_rect(fill = "#f5f5f5")) +
   scale_x_log10()  # Apply log10 transformation to x-axis
 ggsave(paste("figure/3.dmgS over Income_B_",persistence,".png",sep=''), 
-       plot = plot3, width = 6, height = 4, dpi = 300)
+       plot = plot3, width = 16, height = 4, dpi = 300)
 
 
-plot4 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income/State_preDMG_Income, y = Damage/State_Damage, color =cpercentile)) +
+plot4 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income/State_preDMG_Income, y = Damage/State_Damage, color = as.factor(cpercentile))) +
   geom_point(size=1.2) +
-  scale_color_viridis() +  #Use the viridis color palette
-  labs(x = "Relative Income", y = "Relative Income") +
-  ggtitle("Relative Damage against Relative Income") +
+  scale_color_viridis(discrete = T) +  #Use the viridis color palette
+  labs(x = "Relative Income", y = "Relative Damage") +
+  ggtitle("Relative Damage against Relative Income (2019)") +
   theme_bw() +
   theme(axis.text.y = element_text(size = 10),
         axis.text.x = element_text(size = 10),

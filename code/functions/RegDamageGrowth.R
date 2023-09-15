@@ -30,7 +30,7 @@ RegDamageGrowth <- function(data,model){
     
   #Complete the regression function by adding fixed effects.  
   formula_str <- paste("Growth_income ~ ", paste(alist, collapse = " + "),
-                        "+ as.numeric(Year) : state  + Year + panelid")  
+                        "+ as.numeric(Year) : state  + panelid + state")  
 
   
 

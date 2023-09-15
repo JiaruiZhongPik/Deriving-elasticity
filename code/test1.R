@@ -1,5 +1,6 @@
-ggplot(pdata[which(pdata$state==90&pdata$Year==1998),],aes(x=Counterfactual_income_IP,y=Damage_IP/Counterfactual_income_IP))+
+ggplot(pdata[which(pdata$state==12&pdata$Year==1988),],aes(x=Counterfactual_income_IP,y=Damage_IP/Counterfactual_income_IP))+
   geom_point()
+  #geom_smooth(method = "lm", se = FALSE, color = "red")
   #geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed")
 
 ggplot(pdata,aes(x=factor(cpercentile),y=Damage_IP/Counterfactual_income_IP))+
