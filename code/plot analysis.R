@@ -54,7 +54,7 @@ ggsave(paste("figure/2.box plot over dmgS income groups_",persistence,".png",sep
 
 
 plot3 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income, y = Damage/Counterfactual_income, color = factor(cpercentile))) +
-  geom_point(size=1.2) +
+  geom_point(size=0.8) +
   scale_color_viridis(discrete = TRUE) +  # Use the viridis color palette
   labs(x = "Income per capita", y = "Damage/Income") +
   ggtitle("Damage share over income level (2019)") +
@@ -70,7 +70,7 @@ plot3 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income, y 
         panel.background = element_rect(fill = "#f5f5f5")) +
   scale_x_log10()  # Apply log10 transformation to x-axis
 ggsave(paste("figure/3.dmgS over Income_B_",persistence,".png",sep=''), 
-       plot = plot3, width = 16, height = 4, dpi = 300)
+       plot = plot3, width = 8, height = 3, dpi = 300)
 
 
 plot4 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income/State_preDMG_Income, y = Damage/State_Damage, color = as.factor(cpercentile))) +

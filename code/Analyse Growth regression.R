@@ -216,5 +216,80 @@ png("figure/boxplot_figure_Peron.png", width = 500, height = 300)
 boxplot(-delta.P.lmiddle)
 dev.off()
 
+#-------------------------project of Gilli's model with our data-----------------------------
+#Data needed for regressions are GDP per capita, GDP lag, temperature with climate change(temp1) and temperature without climate change
+df <- pdata %>%
+  select(all_of(c('state','Year','panelid','CountryCode','cpercentile','temp','PTNI05','ctemp_gswp3','wid_stateincome_ppp05','yhat2','yhat1')))
+
+coef <- RegTableG %>%
+  mutate(cpercentile = seq(1,10))%>%
+  rename(coef.temp = temp,
+         coef.temp2 = temp2)
+
+df <- merge(df,coef,by="cpercentile",all.x=T)%>%
+  mutate(logIncomeLag = log(shift(wid_stateincome_ppp05)),
+         deltay.P = yhat2- yhat1)
+
+subdf <- df %>%
+  mutate( deltay.G =  coef.temp * (temp - ctemp_gswp3) + coef.temp2 * (temp^2 - ctemp_gswp3^2) +
+            tempXgdp_1 * (temp - ctemp_gswp3) * logIncomeLag + temp2Xgdp_1 * (temp^2 - ctemp_gswp3^2) * logIncomeLag)
+
+p.G <- ggplot(subdf[which(subdf$Year==2019),],aes(x=PTNI05,y=deltay.G,color = factor(cpercentile)))+
+  geom_point()+
+  geom_point(size=0.8) +
+  scale_color_viridis(discrete = TRUE) +  # Use the viridis color palette
+  labs(x = "Income per capita", y = "difference in growth rate") +
+  ggtitle("Growth rate impact over income level (2019)") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5")) +
+  scale_x_log10()  # Apply log10 transformation to x-axis
+
+p.G <- ggplot(subdf[which(subdf$Year==2019),],aes(x=temp,y=deltay.G,color = factor(cpercentile)))+
+  geom_point()+
+  geom_point(size=0.6) +
+  scale_color_viridis(discrete = TRUE) +  # Use the viridis color palette
+  labs(x = "Income per capita", y = "difference in growth rate") +
+  ggtitle("Growth rate impact over income level (2019) - Gilli") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5")) +
+  scale_x_log10()+
+  coord_cartesian(ylim = c(-0.05, 0.1))# Apply log10 transformation to x-axis
+ggsave(paste("figure/growth impacts over income level_Gilli.png",sep=''), 
+       plot = p.G, width =7, height = 4, dpi = 300)
 
 
+p.P <-ggplot(subdf[which(subdf$Year==2019),],aes(x=PTNI05,y=deltay.P,color = factor(cpercentile)))+
+  geom_point()+
+  geom_point(size=0.6) +
+  scale_color_viridis(discrete = TRUE) +  # Use the viridis color palette
+  labs(x = "Income per capita", y = "difference in growth rate") +
+  ggtitle("Growth rate impact over income level (2019) - Peron") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "#f5f5f5")) +
+  scale_x_log10()+coord_cartesian(ylim = c(-0.05, 0.1))
+ggsave(paste("figure/growth impacts over income level_Peron.png",sep=''), 
+       plot = p.P, width = 7, height = 4, dpi = 300)

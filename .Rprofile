@@ -12,6 +12,7 @@ suppressPackageStartupMessages({
 	require(broom)
 	require(lfe)
 	require(stargazer)
+	require(viridis)
 })
 
 
