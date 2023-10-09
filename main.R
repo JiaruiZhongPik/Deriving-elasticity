@@ -20,7 +20,7 @@ pdata <- pdata %>%
   mutate(PTNI05L = shift(PTNI05,n=1)) 
 
 
-RegResults=RegDamageGrowth(pdata,"AdaptationGilli")
+RegResults=RegDamageGrowth(pdata,"AdaptationPeron")
 
 
 
@@ -28,7 +28,7 @@ RegResults=RegDamageGrowth(pdata,"AdaptationGilli")
 #predict growth with observed and counterfactual temperature
 #------------------------------------------------------------
 
-pdata=PredictrRegDG(pdata,RegResults,"AdaptationGilli")
+pdata=PredictrRegDG(pdata,RegResults,"AdaptationPeron")
 
 
 
