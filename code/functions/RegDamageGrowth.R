@@ -21,8 +21,8 @@ RegDamageGrowth <- function(data,model){
     col_select <- c("Growth_income","temp", "prec","IG_hetero","Year","state","panelid","ctemp_gswp3")
   } else if (model == "AdaptationGilli") {
     alist <- c("temp", "I(temp^2)", "prec", "I(prec^2)", 
-               "wid_stateincome_ppp05:temp", "wid_stateincome_ppp05:I(temp^2)", 
-               "wid_stateincome_ppp05:prec", "wid_stateincome_ppp05:I(prec^2)")
+               "PTNI05L:temp", "PTNI05L:I(temp^2)", 
+               "PTNI05L:prec", "PTNI05L:I(prec^2)")
     col_select <- c("Growth_income","temp", "prec","wid_stateincome_ppp05","Year","state","panelid","ctemp_gswp3")
   } else {
     # Handle other cases or provide a default value if necessary

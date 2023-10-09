@@ -11,7 +11,7 @@ PredictrRegDG <- function(data,regmodel,model){
   } else if (model == "AdaptationPeron") {
     col_select <- c("Growth_income","temp", "prec","IG_hetero","Year","state","panelid","ctemp_gswp3")
   } else if (model == "AdaptationGilli") {
-    col_select <- c("Growth_income","temp", "prec","wid_stateincome_ppp05","Year","state","panelid","ctemp_gswp3")
+    col_select <- c("Growth_income","temp", "prec","PTNI05L","Year","state","panelid","ctemp_gswp3")
   } else {
     # Handle other cases or provide a default value if necessary
     print('Please enter the correct model, NoAdaptation,AdaptationPeron,or AdaptationGilli')}

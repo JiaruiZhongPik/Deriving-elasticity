@@ -10,13 +10,17 @@ pdata<-PrepareData()
 #can be saved if pdata.Rdata already exist
 
 
-
 #-------------Step2--------------------
 #conduct regression for damage function
 #--------------------------------------
 load("pdata.RData")
 
-RegResults=RegDamageGrowth(pdata,"AdaptationPeron")
+pdata <- pdata %>%
+  group_by(panelid) %>%
+  mutate(PTNI05L = shift(PTNI05,n=1)) 
+
+
+RegResults=RegDamageGrowth(pdata,"AdaptationGilli")
 
 
 
@@ -24,7 +28,7 @@ RegResults=RegDamageGrowth(pdata,"AdaptationPeron")
 #predict growth with observed and counterfactual temperature
 #------------------------------------------------------------
 
-pdata=PredictrRegDG(pdata,RegResults,"AdaptationPeron")
+pdata=PredictrRegDG(pdata,RegResults,"AdaptationGilli")
 
 
 
