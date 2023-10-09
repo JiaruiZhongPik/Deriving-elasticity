@@ -23,7 +23,7 @@ RegDamageGrowth <- function(data,model){
     alist <- c("temp", "I(temp^2)", "prec", "I(prec^2)", 
                "PTNI05L:temp", "PTNI05L:I(temp^2)", 
                "PTNI05L:prec", "PTNI05L:I(prec^2)")
-    col_select <- c("Growth_income","temp", "prec","wid_stateincome_ppp05","Year","state","panelid","ctemp_gswp3")
+    col_select <- c("Growth_income","temp", "prec","PTNI05L","Year","state","panelid","ctemp_gswp3")
   } else {
     # Handle other cases or provide a default value if necessary
     print('Please enter the correct model, NoAdaptation,AdaptationPeron,or AdaptationGilli')}
