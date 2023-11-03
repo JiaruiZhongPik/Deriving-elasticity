@@ -6,7 +6,7 @@ plot1 <- ggplot(pdata, aes(PTNI05)) +
   labs(title = "Density Plot", x = "X-axis Label", y = "Density")+
   scale_x_log10()+
   labs(x = "Income level", y = "Density") +
-  ggtitle("Box Plot of Damage over Income Groups")+
+  ggtitle("Income distribution")+
   theme_bw()+
   theme(axis.text.y = element_text(size = 10),
         axis.text.x = element_text(size = 10),

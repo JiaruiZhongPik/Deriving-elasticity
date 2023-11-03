@@ -31,7 +31,7 @@ RegResults=RegDamageGrowth(pdata,"AdaptationPeron")
 pdata=PredictrRegDG(pdata,RegResults,"AdaptationPeron")
 
 
-
+#choose among: "NoAdaptation","AdaptationPeron","AdaptationGilli"
 
 
 #----------------Step4-----------------------------------

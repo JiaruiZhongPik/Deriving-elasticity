@@ -68,9 +68,12 @@ plot3 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income, y 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         panel.background = element_rect(fill = "#f5f5f5")) +
-  scale_x_log10()  # Apply log10 transformation to x-axis
-ggsave(paste("figure/3.dmgS over Income_B_",persistence,".png",sep=''), 
-       plot = plot3, width = 8, height = 3, dpi = 300)
+  scale_x_log10( limits=c(1,1200000),
+                 breaks = c(100,10000,1000000),
+                 labels= c(100,10000,1000000)) + # Apply log10 transformation to x-axis
+  ylim(-5,1)
+ggsave(paste("figure/3.dmgS over Income_PeronAdpt_",persistence,".png",sep=''), 
+       plot = plot3, width = 8, height = 5, dpi = 300)
 
 
 plot4 <- ggplot(data[which(data$Year==2019),], aes(x = Counterfactual_income/State_preDMG_Income, y = Damage/State_Damage, color = as.factor(cpercentile))) +

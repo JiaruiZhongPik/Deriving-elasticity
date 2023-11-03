@@ -108,9 +108,6 @@ PrepareData <- function(){
   pdata <- pdata %>%
     arrange(panelid, Year)
   
-  #generate average state income ppp05
-  pdata$wid_stateincome_ppp05 <- pdata$avg_inc / pdata$PPP2005
-  
   
   return(pdata)
   
