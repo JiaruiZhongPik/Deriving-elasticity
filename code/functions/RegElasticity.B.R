@@ -9,7 +9,7 @@ RegElasticity.B <- function(Polypara,data,persistence){
     select(ends_with(persistence),all_of(c("Year", "state","panelid", "temp","cpercentile"))) %>%
     dplyr::filter(Year >  1987) %>%
     rename_with(~ gsub(paste("_",persistence,"$",sep=''), "", .), ends_with(persistence)) %>%
-    mutate(dep = Damage/Counterfactual_income,
+    mutate(dep = abs(Damage/Counterfactual_income),
            cov = Counterfactual_income) 
    
   covariate.labels=list(c("log(IncomePreDMG)","Temperature"),

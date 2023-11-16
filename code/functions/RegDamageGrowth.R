@@ -12,18 +12,18 @@ RegDamageGrowth <- function(data,model){
   #Determine the model function, whether and how adatptive capability is incooperated  
   if (model == "NoAdaptation") {
     alist <- c("temp", "I(temp^2)", "prec", "I(prec^2)")
-    col_select <- c("Growth_income","temp", "prec","Year","state","panelid","ctemp_gswp3")
+    col_select <- c("Growth_income","temp", "prec","Year","state","panelid")
     
   } else if (model == "AdaptationPeron") {
     alist <- c("temp", "I(temp^2)", "prec", "I(prec^2)", 
                "IG_hetero:temp", "IG_hetero:I(temp^2)", 
                "IG_hetero:prec", "IG_hetero:I(prec^2)")
-    col_select <- c("Growth_income","temp", "prec","IG_hetero","Year","state","panelid","ctemp_gswp3")
+    col_select <- c("Growth_income","temp", "prec","IG_hetero","Year","state","panelid")
   } else if (model == "AdaptationGilli") {
     alist <- c("temp", "I(temp^2)", "prec", "I(prec^2)", 
                "PTNI05L:temp", "PTNI05L:I(temp^2)", 
                "PTNI05L:prec", "PTNI05L:I(prec^2)")
-    col_select <- c("Growth_income","temp", "prec","PTNI05L","Year","state","panelid","ctemp_gswp3")
+    col_select <- c("Growth_income","temp", "prec","PTNI05L","Year","state","panelid")
   } else {
     # Handle other cases or provide a default value if necessary
     print('Please enter the correct model, NoAdaptation,AdaptationPeron,or AdaptationGilli')}
@@ -40,8 +40,6 @@ RegDamageGrowth <- function(data,model){
     subset_data <- data %>%
       dplyr::filter(cpercentile == i) %>%
       select(all_of(col_select))
-    
-    subset_data <- subset_data[complete.cases(subset_data[,col_select[col_select != "ctemp_gswp3"]]), ]
     
     RegResults [[i]] <- lm(formula_str, data = subset_data)
     

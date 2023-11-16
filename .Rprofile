@@ -13,6 +13,11 @@ suppressPackageStartupMessages({
 	require(lfe)
 	require(stargazer)
 	require(viridis)
+	require(GB2group)
+	require(ineq)
+	require(sf)
+	require(rnaturalearth)
+	require(rnaturalearthdata)
 })
 
 
