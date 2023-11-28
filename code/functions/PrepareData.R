@@ -16,7 +16,7 @@ PrepareData <- function(){
   data <- data[!is.na(data$Year), ]
   data <- data[data$percentile != "", ]
   data <- data[!(data$aptinc > 0 & is.na(data$PWMtemp_cru_v4)), ]
-  data <- data[!(data$CountryCode %in% c("SYC", "MDV", "VEN", "SSD", "PRK")), ]
+  data <- data[!(data$CountryCode %in% c("SYC", "MDV", "VEN", "SSD", "PRK",'ZZA')), ]
   
   # Creating new variables
   
@@ -104,6 +104,8 @@ PrepareData <- function(){
   pdata$state=as.factor(pdata$state)
   
   
+  
+
   # Sorting data for the regression analysis
   pdata <- pdata %>%
     arrange(panelid, Year)
