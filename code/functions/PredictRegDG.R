@@ -26,7 +26,16 @@ PredictrRegDG <- function(data,startyear,regmodel,model){
     subset_data <- data %>%
       dplyr::filter(cpercentile == i) %>%
       select(all_of(col_select))
-   
+    
+    
+    if (model == "AdaptationPeron") {
+      
+      subset_data <- subset_data %>%
+        group_by(state) %>%
+        mutate(IG_hetero =  zoo::na.locf(IG_hetero, fromLast = TRUE) )
+      
+    }
+    
     subset_data <- subset_data[complete.cases(subset_data[,col_select[col_select != "ctemp"]]), ]
     
     # Predictions using observed temperature

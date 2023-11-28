@@ -28,34 +28,31 @@ EstimateDamage <- function(data, Startyear,HL){
     Persistence <- rep(1,length(Startyear:as.numeric(max(data$Year))))
   } else {Persistence <- rep(NA,length(Startyear:as.numeric(max(data$Year))))}
   
-
   
-  for(i in unique(pdata$panelid)){
-    subset_data <- data %>%
-      dplyr::filter(panelid == i,Year >= Startyear) %>%
-      mutate(
-        Year = as.numeric(Year),
-        growth_cf_cum = NA
-        )
+  growth_cf_cum <- function(growth,delta,persistence){
     
-    subset_data$t = subset_data$Year - Startyear + 1
+    growth_cf_cum = rep(NA,length(growth))
+    growth_cf_cum[1] = 1
     
-    for (n in unique(subset_data$t)[-1]){
-      subset_data[subset_data$t == n,]$growth_cf_cum=
-        prod(1 + subset_data$growth_income_a[2:n] + subset_data$delta_growth_a[2:n] * rev(Persistence[1:(n-1)]))
+    for (n in 2:length(growth_cf_cum)){
+      growth_cf_cum[n] =
+        prod(1 + growth[2:n] + delta[2:n] * rev(Persistence[1:(n-1)]))
+      
     }
-    
-    #compute counterfactual GDP
-    subset_data$Counterfactual_income = ifelse(subset_data$Year == Startyear, subset_data$PTNI05, 
-                                             ifelse(subset_data$Year > Startyear, 
-                                                    subset_data$PTNI05[subset_data$Year == Startyear] * subset_data$growth_cf_cum,NA))
-    
-    data[which(data$panelid == i&data$Year >= Startyear),"Counterfactual_income"] = subset_data[,"Counterfactual_income"]
- 
-     }
+    return(growth_cf_cum)
+  }
   
-    data=data %>% 
-    mutate(Damage=Counterfactual_income-PTNI05)
+    
+    #data[data$panelid==i,]$t = data[data$panelid==i,]$Year - Startyear +1
+    
+    data<- data %>% 
+      group_by(panelid) %>%
+      mutate( Year= as.numeric(Year),
+              t = Year- Startyear +1,
+             growth_cf_cum = growth_cf_cum(growth_income_a,delta_growth_a,Persistence),
+             Counterfactual_income = PTNI05[1] * growth_cf_cum,
+             Damage = Counterfactual_income - PTNI05)
+
     
     return(data[c("Counterfactual_income","Damage")])
 }

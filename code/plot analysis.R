@@ -1,7 +1,7 @@
 library(viridis)
 
 Polypara=1
-persistence="P10"
+persistence="IP"
 
 data <- pdata %>%
 select(ends_with(persistence),all_of(c("Year", "state","CountryCode","panelid", "temp","ctemp_gswp3","cpercentile","PTNI05","Growth_income",'IG_hetero'))) %>%
@@ -53,7 +53,7 @@ ggsave(paste("figure/2.box plot over dmgS income groups_",persistence,".png",sep
        plot = plot2, width = 5, height = 4, dpi = 300)
 
 
-plot3 <- ggplot(data[which(data$Year == 2019), ], aes(x = log(Counterfactual_income), y = log(Damage/Counterfactual_income), color = factor(cpercentile))) +
+plot3 <- ggplot(data[which(data$Year == 2019), ], aes(x = Counterfactual_income, y = Damage/Counterfactual_income, color = factor(cpercentile))) +
   geom_point(size = 0.8) +
   scale_color_viridis(discrete = TRUE) +  # Use the viridis color palette
   labs(x = "Income per capita", y = "Damage/Income") +
@@ -76,8 +76,7 @@ plot3 <- ggplot(data[which(data$Year == 2019), ], aes(x = log(Counterfactual_inc
     labels = c(100, 10000, 1000000)
   ) +
   geom_smooth(method = "lm", formula = y ~ x, se = TRUE, color = "darkblue")  # Add a single linear regression line for all points
-
-  #ylim(-3,1)
+  #ylim(-0.21,0.25)
 ggsave(paste("figure/3.dmgS over Income_PeronAdpt_",persistence,"_2.png",sep=''), 
        plot = plot3, width = 8, height = 4, dpi = 300)
 
@@ -152,7 +151,7 @@ ggsave(paste("figure/plot6_deltaY.png",sep=''),
 
 
 
-ggplot(data, aes(x =yhat2 - yhat1, y = Growth_income, color = factor(cpercentile))) +
+ggplot(pdata, aes(x =ctemp-temp, y = yhat2 - yhat1)) +
   geom_point() +
   scale_color_viridis(discrete = T) +  #Use the viridis color palette
   labs(x = "Growth_income", y = " yhat2 - yhat1") +

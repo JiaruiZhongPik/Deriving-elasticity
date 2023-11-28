@@ -22,6 +22,7 @@ pdata <- pdata %>%
 
 
 adaptation = "AdaptationPeron"
+
 #choose among: "NoAdaptation","AdaptationPeron","AdaptationGilli"
 
 
@@ -29,23 +30,30 @@ RegResults=RegDamageGrowth(pdata,adaptation)
 
 
 
-# level the counterfactual temperature so that the counterfacual and observed temperatreu are the same at starting year
-pdata <- pdata %>% 
-  dplyr::filter(Year >= 1987) %>%
-  group_by(panelid) %>%
-  mutate(level = temp[1] - ctemp_gswp3[1],
-         ctemp =  ctemp_gswp3 +level
-
-  )
 
 #--------------Step3----------------------------------------
 #predict growth with observed and counterfactual temperature
 #------------------------------------------------------------
 
 
+#Choose start year
+Startyear= 1987
 
-pdata=PredictrRegDG(pdata,1987,RegResults,adaptation)
 
+
+# level the counterfactual temperature so that the counterfactual and observed temperature are the same at starting year
+pdata <- pdata %>% 
+  dplyr::filter(Year >= Startyear) %>%
+  group_by(panelid) %>%
+  mutate(level = temp[1] - ctemp_gswp3[1],
+         ctemp =  ctemp_gswp3+level,
+         
+  )
+
+
+
+pdata=PredictrRegDG(pdata,Startyear,RegResults,adaptation)
+#IG_hetero is filled with the most recent value for projection
 
 
 
@@ -53,23 +61,23 @@ pdata=PredictrRegDG(pdata,1987,RegResults,adaptation)
 #predict damage as difference between counterfactual and observed gdp
 #--------------------------------------------------------
 
-result=EstimateDamage(pdata,1987,HL='IP') #infinite persistence
+result=EstimateDamage(pdata,Startyear,HL='IP') #infinite persistence
 pdata$Counterfactual_income_IP=result$Counterfactual_income
 pdata$Damage_IP=result$Damage
 
-result=EstimateDamage(pdata,1987,HL=5)
+result=EstimateDamage(pdata,Startyear,HL=5)
 pdata$Counterfactual_income_P5=result$Counterfactual_income
 pdata$Damage_P5=result$Damage
 
-result=EstimateDamage(pdata,1987,HL=10)
+result=EstimateDamage(pdata,Startyear,HL=10)
 pdata$Counterfactual_income_P10=result$Counterfactual_income
 pdata$Damage_P10=result$Damage
 
-result=EstimateDamage(pdata,1987,HL=20)
+result=EstimateDamage(pdata,Startyear,HL=20)
 pdata$Counterfactual_income_P20=result$Counterfactual_income
 pdata$Damage_P20=result$Damage
 
-result=EstimateDamage(pdata,1987,HL=30)
+result=EstimateDamage(pdata,Startyear,HL=30)
 pdata$Counterfactual_income_P30=result$Counterfactual_income
 pdata$Damage_P30=result$Damage
 
@@ -180,7 +188,8 @@ pdata <- pdata %>%
 pdata <- pdata %>%
   group_by(state,Year)%>%
   mutate(
-    gini_nonp=ifelse(all(!is.na(PTNI05)), ineq(PTNI05, type = 'Gini'), NA_real_)
+    gini_nonp = ifelse(all(!is.na(PTNI05)), ineq(PTNI05, type = 'Gini'), NA_real_),
+    gini_nonp_P10 = ifelse(all(!is.na(Counterfactual_income_P10)), ineq(Counterfactual_income_P10, type = 'Gini'), NA_real_)
     )
 
 
